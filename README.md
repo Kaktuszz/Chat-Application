@@ -1,6 +1,6 @@
 # LedsChat - Realtime Chat Web Application
 
-### Overview
+## Overview
 
 LedsChat is a dynamic and interactive real-time chat web application that utilizes the power of Vite React.ts on the frontend, coupled with Express.js on the backend. MongoDB serves as the database, storing user information and chat messages, while Socket.io is employed to facilitate seamless real-time communication, including chat sessions and user online/offline status.
 
@@ -20,7 +20,6 @@ LedsChat is a dynamic and interactive real-time chat web application that utiliz
 - Socket.io Integration: Implement Socket.io for real-time communication, enabling seamless and instant updates for chat messages and user status.
 
 
-
 ## Technologies Used
 
 - Vite
@@ -29,6 +28,10 @@ LedsChat is a dynamic and interactive real-time chat web application that utiliz
 - MongoDB
 - Socket.io
 
+## Links
+
+- [Express server repository](https://github.com/Kaktuszz/Chat-Application-API)
+- [Socket server repository](https://github.com/Kaktuszz/Chat-Application-Socket)
 
 ## Author
 
