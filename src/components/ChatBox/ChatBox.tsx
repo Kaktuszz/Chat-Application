@@ -78,8 +78,8 @@ export const ChatBox = ({
 
   /// handlers
 
-  const handleChange = (message: any) => {
-    setMessage(message);
+  const handleChange = (e: any) => {
+    setMessage(e.target.value);
   };
 
   const sendMessage = async () => {
@@ -95,9 +95,11 @@ export const ChatBox = ({
       setMessage("");
     } catch (error) {
       console.error(error);
+      setMessage("");
     }
     const time = clock();
     const receiverId = chat.members.find((id: any) => id !== currentUser);
+    setMessage("");
     setSendMessage({ ...message, receiverId, createdAt: time });
   };
 
@@ -160,6 +162,7 @@ export const ChatBox = ({
 
           <Box
             position="sticky"
+            mb="3"
             bottom="0"
             p="10px"
             bg="gray.50"
