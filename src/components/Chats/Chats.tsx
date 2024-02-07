@@ -1,4 +1,4 @@
-import { Box, Button, Center, Flex, Image } from "@chakra-ui/react";
+import { Box, Button, Center, Flex, Image, Spacer } from "@chakra-ui/react";
 import Logo from "../../assets/logo.svg";
 import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
@@ -8,6 +8,8 @@ import { ChatBox } from "../ChatBox/ChatBox";
 import { io } from "socket.io-client";
 import { FaSearch } from "react-icons/fa";
 import { IoIosSettings, IoIosLogOut } from "react-icons/io";
+import { SettingsModal } from "../Modals/SettingsModal";
+import { SearchModal } from "../Modals/SearchModal";
 
 export const Chats = (props: any) => {
   const windowWidth = props.windowWidth;
@@ -20,6 +22,9 @@ export const Chats = (props: any) => {
   const [sendMessage, setSendMessage] = useState<any>(null);
   const [receiveMessage, setReceiveMessage] = useState<any>(null);
   const [selectedChat, setSelectedChat] = useState<boolean>();
+  const [isSettingOpen, setSettingsOpen] = useState<boolean>(false);
+  const [isSearchOpen, setSearchOpen] = useState<boolean>(false);
+  const [trigger, setTrigger] = useState<boolean>(false);
   const socket = useRef<any>();
 
   /// sending message to socket
@@ -27,7 +32,6 @@ export const Chats = (props: any) => {
   useEffect(() => {
     if (sendMessage !== null) {
       socket.current.emit("send-message", sendMessage);
-      console.log(sendMessage);
     }
   }, [sendMessage]);
 
@@ -58,7 +62,7 @@ export const Chats = (props: any) => {
     };
 
     getChats();
-  }, [user]);
+  }, [user, trigger]);
 
   const checkOnline = (chat: any) => {
     const chatMember = chat.members.find((member: any) => member !== user._id);
@@ -73,76 +77,94 @@ export const Chats = (props: any) => {
   };
 
   const logout = () => {
-    localStorage.removeItem("profile");
-    localStorage.removeItem("store");
+    localStorage.clear();
     location.reload();
   };
 
   return (
-    <Flex h="100vh">
-      <Box
-        bg="gray.50"
-        w="300px"
-        h="auto"
-        borderRadius="10px"
-        m="10px"
-        p="10px"
-        border="1px solid #D096FF"
-      >
-        <Box>
-          {windowWidth < 600 ? (
-            <Center>
-              <Image src={Logo} maxH="48px" />
-            </Center>
-          ) : (
-            <Box>
-              <Button m="3px">
-                <FaSearch />
-              </Button>
-              <Button m="3px">
-                <IoIosSettings />
-              </Button>
-              <Button m="3px" right="0" onClick={logout} title="logout">
-                <IoIosLogOut />
-              </Button>
-            </Box>
-          )}
-        </Box>
-        {chats.map((chat: any, index: number) => (
-          <Box
-            key={index}
-            onClick={() => {
-              setCurrentChat(chat);
-              setSelectedChat(chat._id);
-            }}
-          >
-            <ConversationBox
-              data={chat}
-              currentUser={user._id}
-              checkOnline={checkOnline(chat)}
-              windowWidth={windowWidth}
-              selectedChat={selectedChat}
-            />
+    <>
+      <Flex h="100vh">
+        <Spacer />
+        <Box
+          bg="gray.50"
+          w="300px"
+          h="auto"
+          borderRadius="10px"
+          m="10px"
+          p="10px"
+          border="1px solid #D096FF"
+          overflowX="auto"
+        >
+          <Box>
+            {windowWidth < 600 ? (
+              <Center>
+                <Image src={Logo} maxH="48px" />
+              </Center>
+            ) : (
+              <Box>
+                <Button m="3px" onClick={() => setSearchOpen(!isSearchOpen)}>
+                  <FaSearch />
+                </Button>
+                <Button m="3px" onClick={() => setSettingsOpen(!isSettingOpen)}>
+                  <IoIosSettings />
+                </Button>
+                <Button m="3px" right="0" onClick={logout} title="logout">
+                  <IoIosLogOut />
+                </Button>
+              </Box>
+            )}
           </Box>
-        ))}
-      </Box>
-      <Box
-        bg="gray.50"
-        m={windowWidth < 600 ? "10px 10px 10px 0px" : "10px"}
-        p="0px 10px 10px 10px"
-        w="1300px"
-        borderRadius="10px"
-        border="1px solid #D096FF"
-        overflowX="auto"
-      >
-        <ChatBox
-          chat={currentChat}
-          currentUser={user._id}
-          setSendMessage={setSendMessage}
-          receiveMessage={receiveMessage}
-          online={online()}
-        />
-      </Box>
-    </Flex>
+          {chats.map((chat: any, index: number) => (
+            <Box
+              key={index}
+              onClick={() => {
+                setCurrentChat(chat);
+                setSelectedChat(chat._id);
+              }}
+            >
+              <ConversationBox
+                data={chat}
+                currentUser={user._id}
+                checkOnline={checkOnline(chat)}
+                windowWidth={windowWidth}
+                selectedChat={selectedChat}
+              />
+            </Box>
+          ))}
+        </Box>
+        <Box
+          bg="gray.50"
+          m={windowWidth < 600 ? "10px 10px 10px 0px" : "10px"}
+          p="0px 10px 10px 10px"
+          w="1300px"
+          borderRadius="10px"
+          border="1px solid #D096FF"
+          overflowX="auto"
+        >
+          <ChatBox
+            chat={currentChat}
+            currentUser={user._id}
+            setSendMessage={setSendMessage}
+            receiveMessage={receiveMessage}
+            online={online()}
+          />
+        </Box>
+        <Spacer />
+      </Flex>
+      <SettingsModal
+        isSettingOpen={isSettingOpen}
+        setSettingsOpen={() => setSettingsOpen(!isSettingOpen)}
+        windowWidth={windowWidth}
+        data={user}
+      />
+      <SearchModal
+        isSearchOpen={isSearchOpen}
+        setSearchOpen={() => setSearchOpen(!isSearchOpen)}
+        user={user}
+        setTrigger={() => setTrigger(!trigger)}
+        setCurrentChat={setCurrentChat}
+        setSelectedChat={setSelectedChat}
+      />
+    </>
   );
 };
